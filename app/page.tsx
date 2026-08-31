@@ -3,11 +3,11 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import {
-  ArrowUpRight,
   BookOpen,
   Feather,
   Image as ImageIcon,
   Layers3,
+  Library,
 } from 'lucide-react';
 
 import {
@@ -18,17 +18,19 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
-type StoryType = 'Text' | 'Image' | 'Mixed';
+type StoryType = 'Image' | 'Text' | 'Mixed' | 'Series';
 
 type Story = {
   id: number;
   title: string;
-  type: StoryType;
+  type: Exclude<StoryType, 'Series'>;
   date: string;
   readTime: string;
   excerpt: string;
   body: string[];
   tone: string;
+  cover?: string;
+  images?: string[];
   imagePosition?: string;
 };
 
@@ -58,6 +60,8 @@ const stories: Story[] = [
     excerpt:
       'A visual letter from a world where gardens grow upward and the moons rise in threes.',
     tone: 'coral',
+    cover: '/og.png',
+    images: ['/og.png'],
     imagePosition: 'center 44%',
     body: [
       'Field note 01 — The wind here carries silver seeds. They gather at the doors of empty houses as if waiting to be invited inside.',
@@ -73,6 +77,7 @@ const stories: Story[] = [
     excerpt:
       'The summer the wells ran dry, one old house continued to dream in the language of storms.',
     tone: 'sage',
+    images: ['/og.png'],
     imagePosition: '72% center',
     body: [
       'The house remembered rain in small, stubborn ways: a coolness beneath the stairs, the smell of wet stone at noon, a soft tapping in the walls.',
@@ -119,6 +124,7 @@ const stories: Story[] = [
     excerpt:
       'Twelve quiet images trace the blue hour between the last birdcall and the rising moon.',
     tone: 'violet',
+    images: ['/og.png'],
     imagePosition: '18% center',
     body: [
       'Frame 01 — A gate left open. Beyond it, the trees hold small circles of light.',
@@ -134,6 +140,7 @@ const stories: Story[] = [
     excerpt:
       'First, find the door that was not there when you arrived. Do not ask who opened it.',
     tone: 'lemon',
+    images: ['/og.png'],
     imagePosition: 'center 68%',
     body: [
       'First, find the door that was not there when you arrived. It will be warm at the handle and cold around the frame.',
@@ -150,6 +157,7 @@ const stories: Story[] = [
     excerpt:
       'The same snowfall seen from three rooms and remembered in three different ways.',
     tone: 'blue',
+    images: ['/og.png'],
     imagePosition: '86% center',
     body: [
       'North window — Snow covering the road before anyone can decide where it led.',
@@ -166,6 +174,7 @@ const stories: Story[] = [
     excerpt:
       'A tide chart, a family recipe, and the story of a town that moved one inch closer to the sea each year.',
     tone: 'sky',
+    images: ['/og.png'],
     imagePosition: '42% center',
     body: [
       'The almanac predicted storms, weddings, fish migrations, and the exact afternoon the sea would reach the post office steps.',
@@ -175,69 +184,36 @@ const stories: Story[] = [
   },
 ];
 
-const categories = [
-  {
-    type: 'Text' as const,
-    id: 'text-stories',
-    title: 'Text stories',
-    description: 'Short fiction, fragments, and written worlds.',
-    icon: BookOpen,
-  },
-  {
-    type: 'Image' as const,
-    id: 'image-stories',
-    title: 'Image stories',
-    description: 'Sequences told through frames, color, and atmosphere.',
-    icon: ImageIcon,
-  },
-  {
-    type: 'Mixed' as const,
-    id: 'mixed-stories',
-    title: 'Mixed stories',
-    description: 'Words and images designed to be experienced together.',
-    icon: Layers3,
-  },
+const storyRows = [
+  { type: 'Image' as const, label: '漫画', english: 'Image stories', icon: ImageIcon },
+  { type: 'Text' as const, label: '文字', english: 'Text stories', icon: BookOpen },
+  { type: 'Mixed' as const, label: '图文', english: 'Mixed stories', icon: Layers3 },
+  { type: 'Series' as const, label: '连载', english: 'Series', icon: Library },
 ];
 
-function StoryPreview({ story }: { story: Story }) {
-  if (story.type === 'Text') {
-    return (
-      <div className={`story-frame text-frame tone-${story.tone}`}>
-        <span className="frame-label">Excerpt</span>
-        <blockquote>“{story.excerpt}”</blockquote>
-        <span className="frame-number">{String(story.id).padStart(2, '0')}</span>
-      </div>
-    );
-  }
+function StoryCover({ story }: { story: Story }) {
+  const image = story.cover ?? story.images?.[0];
 
-  if (story.type === 'Image') {
+  if (image) {
     return (
-      <div className={`story-frame image-frame tone-${story.tone}`}>
+      <span className={`cover-art cover-art-${story.tone}`}>
         <Image
-          src="/og.png"
-          alt="A lantern beside a path leading toward a bright doorway at night."
+          src={image}
+          alt=""
           fill
-          sizes="(max-width: 760px) 100vw, 50vw"
+          sizes="(max-width: 760px) 58vw, 240px"
           style={{ objectPosition: story.imagePosition }}
         />
-        <span className="image-frame-count">{story.readTime}</span>
-      </div>
+      </span>
     );
   }
 
   return (
-    <div className={`story-frame mixed-frame tone-${story.tone}`}>
-      <div className="mixed-image">
-        <Image
-          src="/og.png"
-          alt="A cropped nighttime illustration accompanying the story."
-          fill
-          sizes="(max-width: 760px) 100vw, 35vw"
-          style={{ objectPosition: story.imagePosition }}
-        />
-      </div>
-      <p>{story.excerpt}</p>
-    </div>
+    <span className={`cover-art text-cover tone-${story.tone}`}>
+      <span className="cover-kicker">My Story Factory</span>
+      <strong>{story.title}</strong>
+      <span className="cover-number">{String(story.id).padStart(2, '0')}</span>
+    </span>
   );
 }
 
@@ -251,102 +227,70 @@ export default function Home() {
           <span className="brand-mark"><Feather aria-hidden="true" /></span>
           <span>My Story Factory</span>
         </a>
-        <p>A personal story gallery</p>
+        <p>{stories.length} stories in the collection</p>
       </header>
 
-      <section className="gallery-intro">
+      <section className="shelf-intro">
+        <p className="eyebrow">Personal collection · 2026</p>
         <div>
-          <p className="eyebrow">Collection · 2026</p>
-          <h1>Story gallery</h1>
-        </div>
-        <div className="intro-note">
+          <h1>Stories,<br />shelf by shelf.</h1>
           <p>
-            Browse the complete collection by format. Every story is displayed
-            here—written, visual, or somewhere in between.
+            Every row is a format. Every cover opens a story.
           </p>
-          <dl>
-            <div><dt>Works</dt><dd>{String(stories.length).padStart(2, '0')}</dd></div>
-            <div><dt>Formats</dt><dd>03</dd></div>
-          </dl>
         </div>
       </section>
 
-      <nav className="category-index" aria-label="Story categories">
-        {categories.map((category, index) => {
-          const Icon = category.icon;
-          const count = stories.filter((story) => story.type === category.type).length;
-          return (
-            <a href={`#${category.id}`} key={category.type}>
-              <span className="category-number">0{index + 1}</span>
-              <Icon aria-hidden="true" />
-              <span>{category.title}</span>
-              <strong>{String(count).padStart(2, '0')}</strong>
-            </a>
-          );
-        })}
-      </nav>
-
-      <div className="gallery-catalog">
-        {categories.map((category, categoryIndex) => {
-          const categoryStories = stories.filter(
-            (story) => story.type === category.type,
-          );
-          const Icon = category.icon;
+      <div className="story-shelves">
+        {storyRows.map((row, rowIndex) => {
+          const rowStories = stories.filter((story) => story.type === row.type);
+          const Icon = row.icon;
 
           return (
-            <section
-              id={category.id}
-              className="category-section"
-              key={category.type}
-            >
-              <div className="category-heading">
-                <p>0{categoryIndex + 1}</p>
-                <div>
-                  <Icon aria-hidden="true" />
-                  <h2>{category.title}</h2>
-                </div>
-                <p>{category.description}</p>
-                <span>{categoryStories.length} works</span>
-              </div>
+            <section className="story-row" key={row.type}>
+              <header className="row-label">
+                <span>0{rowIndex + 1}</span>
+                <Icon aria-hidden="true" />
+                <h2>{row.label}</h2>
+                <p>{row.english}</p>
+                <strong>{String(rowStories.length).padStart(2, '0')}</strong>
+              </header>
 
-              <div className="story-grid">
-                {categoryStories.map((story) => (
-                  <article className="story-card" key={story.id}>
-                    <button
-                      type="button"
-                      className="story-open"
-                      onClick={() => setSelectedStory(story)}
-                      aria-label={`Open ${story.title}`}
-                    >
-                      <StoryPreview story={story} />
-                      <div className="story-information">
-                        <div>
-                          <span>{story.date}</span>
-                          <span>{story.readTime}</span>
-                        </div>
-                        <h3>{story.title}</h3>
-                        <p>{story.excerpt}</p>
-                        <span className="open-label">
-                          Open story <ArrowUpRight aria-hidden="true" />
-                        </span>
-                      </div>
-                    </button>
-                  </article>
-                ))}
+              <div className="row-content">
+                {rowStories.length > 0 ? (
+                  <div className="cover-grid">
+                    {rowStories.map((story) => (
+                      <button
+                        type="button"
+                        className="cover-button"
+                        key={story.id}
+                        onClick={() => setSelectedStory(story)}
+                        aria-label={`Open ${story.title}`}
+                      >
+                        <StoryCover story={story} />
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="empty-shelf">
+                    <Image
+                      className="empty-illustration"
+                      src="/waiting-story.png"
+                      alt=""
+                      width={1254}
+                      height={1254}
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <p>还没有故事</p>
+                      <span>在这里等下一篇 · Waiting for a story</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </section>
           );
         })}
       </div>
-
-      <section className="gallery-note">
-        <p>About the archive</p>
-        <h2>A home for every kind of story.</h2>
-        <p>
-          My Story Factory is a growing collection of original fiction and
-          visual storytelling. New work will join the gallery as it is made.
-        </p>
-      </section>
 
       <footer>
         <a href="#top" className="brand">
@@ -372,8 +316,8 @@ export default function Home() {
             {selectedStory.type !== 'Text' && (
               <div className="reader-art">
                 <Image
-                  src="/og.png"
-                  alt={`Atmospheric doorway artwork accompanying ${selectedStory.title}.`}
+                  src={selectedStory.cover ?? selectedStory.images?.[0] ?? '/og.png'}
+                  alt={`Artwork accompanying ${selectedStory.title}.`}
                   width={1536}
                   height={1024}
                 />

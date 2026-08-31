@@ -15,22 +15,31 @@ test('the demo includes text, image, and mixed-media stories', () => {
   assert.equal((page.match(/^\s+id: \d+,/gm) ?? []).length, 9);
 });
 
-test('the homepage is an all-stories gallery grouped by format', () => {
-  assert.match(page, /<h1>Story gallery<\/h1>/);
-  assert.match(page, /id: 'text-stories'/);
-  assert.match(page, /id: 'image-stories'/);
-  assert.match(page, /id: 'mixed-stories'/);
-  assert.match(page, /categories\.map\(\(category, categoryIndex\)/);
-  assert.match(page, /stories\.filter\(/);
+test('the homepage presents story types as rows rather than category links', () => {
+  assert.match(page, /className="story-shelves"/);
+  assert.match(page, /className="story-row"/);
+  assert.doesNotMatch(page, /category-index/);
+  for (const label of ['漫画', '文字', '图文', '连载']) {
+    assert.match(page, new RegExp(label));
+  }
 });
 
-test('gallery cards open an accessible story reader', () => {
+test('row blocks show covers with a first-image fallback', () => {
+  assert.match(page, /const image = story\.cover \?\? story\.images\?\.\[0\]/);
+  assert.match(page, /className="cover-grid"/);
   assert.match(page, /aria-label={`Open \${story\.title}`}/);
+});
+
+test('empty story types show a waiting illustration', () => {
+  assert.match(page, /type: 'Series' as const/);
+  assert.match(page, /rowStories\.length > 0/);
+  assert.match(page, /src="\/waiting-story\.png"/);
+  assert.match(page, /还没有故事/);
+});
+
+test('cover blocks open an accessible story reader', () => {
   assert.match(page, /<DialogContent className="reader-dialog">/);
-  assert.match(page, /story-frame text-frame tone-/);
-  assert.match(page, /story-frame image-frame tone-/);
-  assert.match(page, /story-frame mixed-frame tone-/);
-  assert.match(page, /src="\/og\.png"/);
+  assert.match(page, /open=\{Boolean\(selectedStory\)\}/);
 });
 
 test('site metadata describes the story archive', () => {
