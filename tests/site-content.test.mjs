@@ -12,12 +12,24 @@ test('the demo includes text, image, and mixed-media stories', () => {
   for (const storyType of ["type: 'Text'", "type: 'Image'", "type: 'Mixed'"]) {
     assert.match(page, new RegExp(storyType.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
+  assert.equal((page.match(/^\s+id: \d+,/gm) ?? []).length, 9);
 });
 
-test('the collection exposes filters and an accessible story reader', () => {
-  assert.match(page, /<legend className="sr-only">Filter stories<\/legend>/);
+test('the homepage is an all-stories gallery grouped by format', () => {
+  assert.match(page, /<h1>Story gallery<\/h1>/);
+  assert.match(page, /id: 'text-stories'/);
+  assert.match(page, /id: 'image-stories'/);
+  assert.match(page, /id: 'mixed-stories'/);
+  assert.match(page, /categories\.map\(\(category, categoryIndex\)/);
+  assert.match(page, /stories\.filter\(/);
+});
+
+test('gallery cards open an accessible story reader', () => {
   assert.match(page, /aria-label={`Open \${story\.title}`}/);
   assert.match(page, /<DialogContent className="reader-dialog">/);
+  assert.match(page, /story-frame text-frame tone-/);
+  assert.match(page, /story-frame image-frame tone-/);
+  assert.match(page, /story-frame mixed-frame tone-/);
   assert.match(page, /src="\/og\.png"/);
 });
 
