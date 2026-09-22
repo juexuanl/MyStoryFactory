@@ -1,59 +1,46 @@
 # My Story Factory
 
-My Story Factory is a personal story archive for text, image, and mixed-media storytelling. The current demo presents stories as a bilingual, shelf-based gallery in which every cover opens an accessible reader.
+My Story Factory is a personal project I built to organize and preserve my own stories, writing, and artwork in one place.
+
+The current version is a frontend MVP that presents stories in a shelf-based gallery and supports text, image, and mixed-media content.
 
 ![My Story Factory preview](public/og.png)
 
-## Hosted demo
+## Demo
 
 [Open My Story Factory](https://my-story-factory.juexuanl.chatgpt.site)
 
-The hosted demo is currently access-restricted. A public sign-in page, invitation-only accounts, and Admin/Reviewer permissions are part of the next development stages.
+The hosted demo is currently access-restricted.
 
-## Current features
+## Current Features
 
-- Responsive story shelves for image, text, mixed-media, and future serialized stories
-- Nine representative demo stories
-- Cover artwork with first-image fallback behavior
-- Keyboard-accessible story reader dialogs
-- Empty-shelf treatment for story types without content
-- Site metadata and social-sharing artwork
-- Automated content and documentation tests
-- OpenAI Sites hosting configuration
+* Responsive story gallery organized by content type
+* Support for text, image, and mixed-media stories
+* Story cover artwork with image fallback behavior
+* Keyboard-accessible story reader dialogs
+* Bilingual story content
+* Automated content and documentation tests
+* Hosted demo deployment
 
-The current stories are demo data defined in the frontend source. Authentication, in-browser editing, AWS persistence, and media uploads are planned but are not implemented yet.
+The current stories are demo data defined in the frontend source. Authentication, in-browser editing, persistent storage, and media uploads are not implemented yet.
 
-## Planned product
+## Tech Stack
 
-The initial production product will support two invitation-only roles:
+* React 19
+* TypeScript
+* Tailwind CSS
+* Vinext
+* shadcn / Base UI
+* Vite
+* Node.js test runner
+* OpenAI Sites
 
-| Role | Access |
-| --- | --- |
-| Admin | Create, edit, publish, unpublish, and delete stories and media |
-| Reviewer | Read published stories and media without changing them |
+## Running Locally
 
-Stories will use an ordered block model so text, images, and video can be mixed freely. The recommended backend uses Amazon Cognito for accounts, DynamoDB for structured story data, S3 for private media, and API Gateway with Lambda for secured application operations.
+Requirements:
 
-See [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) for the architecture decisions, security rules, implementation phases, acceptance criteria, and launch plan.
-
-## Technology
-
-- React 19
-- Vinext
-- TypeScript
-- Tailwind CSS
-- shadcn and Base UI components
-- Lucide icons
-- Vite and the OpenAI Sites plugin
-- Cloudflare Workers-compatible server output
-- Node.js test runner, Oxlint, and Oxfmt
-
-## Requirements
-
-- Node.js 22.13 or newer
-- pnpm
-
-## Local development
+* Node.js 22.13+
+* pnpm
 
 Install dependencies:
 
@@ -67,9 +54,7 @@ Start the development server:
 pnpm dev
 ```
 
-Use the local URL printed by the development server.
-
-## Validation commands
+Run tests, linting, and a production build:
 
 ```bash
 pnpm test
@@ -77,36 +62,33 @@ pnpm lint
 pnpm build
 ```
 
-Format supported project files with:
-
-```bash
-pnpm format
-```
-
-Run the relevant tests and a production build before publishing a site update.
-
-## Project structure
+## Project Structure
 
 ```text
 app/                  Application routes, layout, and global styles
-components/ui/        Reusable interface components
+components/ui/        Reusable UI components
 lib/                  Shared frontend utilities
 public/               Static artwork and metadata images
-tests/                Automated project-content tests
-.openai/hosting.json  OpenAI Sites project binding
-DEVELOPMENT_PLAN.md   Agreed product architecture and delivery roadmap
+tests/                Automated tests
 ```
 
-The future AWS implementation is expected to add `backend/` for Lambda application code and `infra/` for infrastructure definitions while keeping the frontend and backend in this repository.
+## Next Steps
 
-## Deployment
+The current version is intentionally a frontend MVP. Future iterations may include:
 
-The project is configured for OpenAI Sites and already has an associated hosted Site. Site releases should be built, tested, committed, and published through the project’s Sites workflow. Runtime secrets and credentials must be configured in the hosting or AWS environment and must never be committed to the repository.
+* User authentication and invitation-only access
+* Admin and reviewer roles
+* Story creation and editing
+* Persistent story storage
+* Private media uploads
+* Backend APIs and AWS infrastructure
 
-## Repository rules
+More detailed design notes and possible backend architecture are documented in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md).
 
-Project-specific development rules are documented in [AGENTS.md](AGENTS.md). In particular, every project update must have relevant passing tests and a Git commit.
+## Why I Built This
 
-## License
+I wanted a simple place to keep and browse stories that I had written or collected, including both text and artwork. I used the project as an opportunity to turn that idea into a working MVP and to experiment with AI-assisted development while still reviewing, testing, and iterating on the implementation myself.
 
-No open-source license has been selected. The stories, artwork, and source remain under the repository owner's control unless a license is added later.
+## Project Status
+
+This is an actively evolving personal project. The current repository represents the MVP stage rather than a finished production application.
